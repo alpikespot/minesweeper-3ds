@@ -41,6 +41,8 @@ int main(int argc, char* argv[])
 	int ticks=0;
 	float bPressT[32] = {0};
 	bool bPressed[32] = {false};
+	const int tileNumX = 16;
+	const int tileNumY = 12;
 	while (aptMainLoop())
 	{
 
@@ -88,12 +90,12 @@ int main(int argc, char* argv[])
 			C2D_TargetClear(bottom, clrClear);
 			C2D_SceneBegin(bottom);
 			C2D_DrawRectSolid(1, 1, 0, tSize-2, tSize-2, clrRec1);
-			for (int y=0;y<SCREEN_HEIGHT;y=y+tSize){ for (int x=0;x<BOTTOM_SCREEN_WIDTH;x=x+tSize){
-
-					if (int(x/tSize) == int(xpos) && int(y/tSize) == int(ypos)) //&& (kDown & BIT(20)))
+			for (int y=0;y<tileNumY;y++){ for (int x=0;x<tileNumX;x++){
+				
+					if (x == int(xpos) && y == int(ypos)) //&& (kDown & BIT(20)))
 					{clr = clrRecPress;}
 					else{clr = clrRec1;}
-					C2D_DrawRectSolid(x+1, y+1, 0, tSize-2, tSize-2, clr);
+					C2D_DrawRectSolid(x*tSize+1, y*tSize+1, 0, tSize-2, tSize-2, clr);
 					//C2D_Color32(rand()%255,0,0,255)
 				} }
 
