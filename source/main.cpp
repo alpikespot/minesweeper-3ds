@@ -6,6 +6,10 @@
 #include <string.h>
 #include <time.h>
 #include <chrono>
+#include <iostream>
+
+#include "flag_t3x.h"
+
 #define BOTTOM_SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 #define TOP_SCREEN_WIDTH  400
@@ -43,6 +47,38 @@ int main(int argc, char* argv[])
 	bool bPressed[32] = {false};
 	const int tileNumX = 16;
 	const int tileNumY = 12;
+	C2D_TextBuf g_staticBuf = C2D_TextBufNew(4096);
+	C2D_Text g_staticText;
+	//load font
+	C2D_Font font = C2D_FontLoadSystem(CFG_REGION_USA);
+	C2D_TextFontParse(&g_staticText, font, g_staticBuf, "a");
+	C2D_TextOptimize(&g_staticText);
+
+	//image stuff
+	C3D_Tex tex;
+	Tex3DS_Texture t3x = Tex3DS_TextureImport(flag_t3x, flag_t3x_size, &tex, NULL, false);
+	C3D_TexSetFilter(&tex, GPU_LINEAR, GPU_NEAREST);
+    // Delete the t3x object since we don't need it
+    Tex3DS_TextureFree(t3x);
+
+
+
+    Tex3DS_SubTexture *subtex = new Tex3DS_SubTexture();
+    subtex->left = subtex->top = 0; 
+	subtex->width = 16; 
+	subtex->height = 16;
+    subtex->right = subtex->bottom = 1;
+
+	C2D_Image flagImg;
+    flagImg.subtex = subtex;
+    flagImg.tex = &tex;
+
+
+
+
+
+
+
 	while (aptMainLoop())
 	{
 
@@ -79,6 +115,7 @@ int main(int argc, char* argv[])
 			ypos = C2D_Clamp(ypos, 0, int(SCREEN_HEIGHT/tSize)-1);
 
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+
 			//--Draw TOP Screen--
 			printf("%f \n", bPressT[D_DOWN]);
 			/*
@@ -91,15 +128,18 @@ int main(int argc, char* argv[])
 			C2D_SceneBegin(bottom);
 			C2D_DrawRectSolid(1, 1, 0, tSize-2, tSize-2, clrRec1);
 			for (int y=0;y<tileNumY;y++){ for (int x=0;x<tileNumX;x++){
-				
+				C2D_Text txt;
 					if (x == int(xpos) && y == int(ypos)) //&& (kDown & BIT(20)))
 					{clr = clrRecPress;}
 					else{clr = clrRec1;}
-					C2D_DrawRectSolid(x*tSize+1, y*tSize+1, 0, tSize-2, tSize-2, clr);
+
+					
+					
 					//C2D_Color32(rand()%255,0,0,255)
 				} }
-
-			//printf("\x1b[2;0H%03d; %03d", touch.px, touch.py);
+			C2D_DrawImageAt(flagImg, 0, 0, 0);
+			
+		//C2D_DrawText(&g_staticText, 0, 8.0f, 8.0f, 0.5f, 0.5f, 0.5f);
 
 		C3D_FrameEnd(0);
 		ticks++;
